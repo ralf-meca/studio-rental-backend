@@ -5,7 +5,7 @@ import {AvailabilityController} from "./availability/availability.controller";
 import {MongooseModule} from "@nestjs/mongoose";
 import {AvailabilityModule} from "./availability/availability.module";
 import {AdminModule} from "./admin/admin.module";
-import {AuthModule} from "./auth/auth.module";
+// import {AuthModule} from "./auth/auth.module";
 
 @Module({
     imports: [
@@ -14,7 +14,7 @@ import {AuthModule} from "./auth/auth.module";
         MongooseModule.forRoot('mongodb://localhost:27017/studio-rental'),
         AvailabilityModule,
         AdminModule,
-        AuthModule,
+        // AuthModule,
     ],
     controllers: [AvailabilityController]
 })

@@ -5,7 +5,7 @@ import {Availability} from "./schemas/availability.schema";
 /**
  * Returns the availability of the studio (dates and hours)
  */
-@Controller('availability')
+@Controller('api/availability')
 export class AvailabilityController {
     constructor(private readonly availabilityService: AvailabilityService) {}
     @Get()
