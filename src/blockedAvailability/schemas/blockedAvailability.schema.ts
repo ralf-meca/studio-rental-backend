@@ -1,11 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export type BlockedHoursDocument = BlockedHours & Document;
+export type BlockedAvailabilityDocument = BlockedAvailability & Document;
 
 
 @Schema()
-export class BlockedHours {
+export class BlockedAvailability {
     @Prop({ required: true, unique: true })
     date: string; // Unique identifier for the day
 
@@ -19,4 +19,4 @@ export class BlockedHours {
     isBlockedByAdmin: boolean;
 }
 
-export const BlockedHoursSchema = SchemaFactory.createForClass(BlockedHours);
+export const BlockedAvailabilitySchema = SchemaFactory.createForClass(BlockedAvailability);
