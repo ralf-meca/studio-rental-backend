@@ -15,19 +15,19 @@ export class BlockedAvailabilityController {
     }
 
     // Query 2: Block the entire day
-    @Put('block-day/:date')
+    @Put('block-unblock-day/:date')
     async blockWholeDay(
         @Param('date') date: string,
         @Body() { isBlocked }: { isBlocked: boolean }
     ) {
-        return this.blockedAvailabilityService.toggleAllDayBlock(date, isBlocked);
+        return this.blockedAvailabilityService.toggleAllDayBlockUnblock(date, isBlocked);
     }
     // Query 3: Bulk block an array of dates (full-day block)
-    @Post('/bulk')
+    @Put('/bulk-block-unblock')
     async bulkBlock(
         @Body() data: { dates: string[]; isBlockedByAdmin: boolean }
     ): Promise<BlockedAvailability[]> {
-        return this.blockedAvailabilityService.bulkBlock(data);
+        return this.blockedAvailabilityService.toggleBulkBlockUnBlock(data);
     }
 
     // Other standard CRUD endpoints

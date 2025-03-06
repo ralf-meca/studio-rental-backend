@@ -81,40 +81,23 @@ export class BlockedAvailabilityService {
     }
 
     // Query 2: Block an entire day
-    async toggleAllDayBlock(date: string, isBlocked: boolean): Promise<BlockedAvailability | null> {
+    async toggleAllDayBlockUnblock(date: string, isBlocked: boolean): Promise<BlockedAvailability | null> {
         return this.blockedAvailabilityModel.findOneAndUpdate(
             { date },
-            { isAllDayBlocked: isBlocked }, // Only update isAllDayBlocked
+            { isAllDayBlocked: isBlocked, isBlockedByAdmin: isBlocked}, // Only update isAllDayBlocked and isBlockedByAdmin
             { new: true, upsert: true }
         ).exec();
     }
-    async blockDay(data: { date: string; isBlockedByAdmin: boolean }): Promise<BlockedAvailability> {
-        const { date, isBlockedByAdmin } = data;
-        const existing = await this.findByDate(date);
-        if (existing) {
-            existing.hoursBlocked = []; // Clear hours as whole day is blocked
-            existing.isAllDayBlocked = true;
-            existing.isBlockedByAdmin = isBlockedByAdmin;
-            return existing.save();
-        } else {
-            return this.create({
-                date,
-                hoursBlocked: [],
-                isAllDayBlocked: true,
-                isBlockedByAdmin,
-            });
-        }
-    }
 
     // Query 3: Bulk block multiple dates (each as a full-day block)
-    async bulkBlock(data: { dates: string[]; isBlockedByAdmin: boolean }): Promise<BlockedAvailability[]> {
+    async toggleBulkBlockUnBlock(data: { dates: string[]; isBlockedByAdmin: boolean }): Promise<BlockedAvailability[]> {
         const { dates, isBlockedByAdmin } = data;
         const blockedDates: BlockedAvailability[] = [];
 
         // For each date, block the whole day (using blockDay logic)
         for (const date of dates) {
-            const record = await this.blockDay({ date, isBlockedByAdmin });
-            blockedDates.push(record);
+            const record = await this.toggleAllDayBlockUnblock( date, isBlockedByAdmin);
+            !!record && blockedDates.push(record);
         }
         return blockedDates;
     }
