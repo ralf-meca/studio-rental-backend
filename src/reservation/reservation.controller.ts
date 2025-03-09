@@ -1,11 +1,19 @@
-import {Controller, Post, Body, UseInterceptors, UploadedFile, BadRequestException, Get, Param} from '@nestjs/common';
+import {
+    Controller,
+    Post,
+    Body,
+    UseInterceptors,
+    UploadedFile,
+    BadRequestException,
+    Get,
+    Param,
+    Patch
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { ReservationService } from './reservation.service';
 import { CreateReservationDto } from './dto/reservation.dto';
-import {Query} from "mongoose";
-import {Reservation} from "./reservation.entity";
 
 @Controller('/api/reservations')
 export class ReservationController {
@@ -32,6 +40,14 @@ export class ReservationController {
         }
         const reservationData = { ...createReservationDto, idPhoto: file.path }; // Save file path
         return this.reservationService.create(reservationData);
+    }
+
+    @Patch(":id")
+    async updateReservation(
+        @Param('id') id: string,
+        @Body() updateData: { status: string; doorCode?: string }
+    ){
+        return this.reservationService.updateReservation(id, updateData)
     }
 
     @Get('month/:yearMonth')

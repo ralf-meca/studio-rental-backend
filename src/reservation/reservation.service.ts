@@ -4,7 +4,7 @@ import {Model} from 'mongoose';
 import {Reservation, ReservationDocument,} from './schema/reservation.schema';
 import {BlockedAvailabilityService} from '../blockedAvailability/blocked-availability.service';
 import {CreateReservationDto} from "./dto/reservation.dto";
-import { EmailService } from '../emails/emails.service';
+import {EmailService} from '../emails/emails.service';
 
 @Injectable()
 export class ReservationService {
@@ -37,8 +37,6 @@ export class ReservationService {
             totalPrice: Number(createReservationDto.totalPrice)
         });
         const savedReservation = await reservation.save();
-        console.log('savedReservation',savedReservation)
-        console.log('createReservationDto.totalPrice',createReservationDto.totalPrice)
 
         // Update blocked availability.
         await this.blockedAvailabilityService.blockHours({
@@ -47,11 +45,38 @@ export class ReservationService {
             isBlockedByAdmin: false, // Since this is coming from a reservation
         })
 
-        // **Send Email Confirmation to User**
+        // Send Email to User
         await this.emailService.sendReservationReceivedEmail(savedReservation);
+
+        // Send Email to Admin
         await this.emailService.sendReservationArrivedAdminEmail(savedReservation);
 
         return savedReservation;
+    }
+
+    async updateReservation(id: string, updateData: { status: string; doorCode?: string }) {
+        const updatedFields: any = {status: updateData.status};
+
+        // Only add doorCode if it exists in the request
+        if (updateData.doorCode) {
+            updatedFields.doorCode = updateData.doorCode;
+        }
+
+        const updatedReservation = await this.reservationModel.findByIdAndUpdate(
+            id,
+            {$set: updatedFields},
+            {new: true} //Return the updated document
+        );
+
+        // Send email to user when reservation status is updated
+        if (updatedReservation?.status === "accepted") {
+            await this.emailService.sendReservationAcceptedEmail(updatedReservation);
+        }
+        if (updatedReservation?.status === "rejected") {
+            await this.emailService.sendReservationRejectedEmail(updatedReservation)
+        }
+
+        return updatedReservation;
     }
 
     async getReservationsByMonth(yearMonth: string): Promise<Reservation[]> {
@@ -64,6 +89,6 @@ export class ReservationService {
         const regexPattern = new RegExp(`^${yearMonth}-\\d{2}$`);
 
         // Query the database
-        return this.reservationModel.find({ date: { $regex: regexPattern } }).exec();
+        return this.reservationModel.find({date: {$regex: regexPattern}}).exec();
     }
 }
