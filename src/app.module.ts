@@ -4,7 +4,7 @@ import {EmailModule} from './emails/emails.module';
 import {MongooseModule} from "@nestjs/mongoose";
 import {AdminModule} from "./admin/admin.module";
 import { ServeStaticModule } from '@nestjs/serve-static';
-import {BlockedAvailabilityModule} from "./blockedAvailability/blockedAvailability.module";
+import {BlockedAvailabilityModule} from "./blockedAvailability/blocked-availability.module";
 import {join} from "path";
 import {ReservationModule} from "./reservation/reservation.module";
 

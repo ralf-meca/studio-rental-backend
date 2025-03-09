@@ -1,9 +1,11 @@
-import {Controller, Post, Body, UseInterceptors, UploadedFile, BadRequestException} from '@nestjs/common';
+import {Controller, Post, Body, UseInterceptors, UploadedFile, BadRequestException, Get, Param} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { ReservationService } from './reservation.service';
 import { CreateReservationDto } from './dto/reservation.dto';
+import {Query} from "mongoose";
+import {Reservation} from "./reservation.entity";
 
 @Controller('/api/reservations')
 export class ReservationController {
@@ -25,11 +27,15 @@ export class ReservationController {
         @UploadedFile() file: Express.Multer.File,
         @Body() createReservationDto: CreateReservationDto,
     ) {
-        console.log('file',file)
         if (!file) {
             throw new BadRequestException('File (idPhoto) not provided');
         }
         const reservationData = { ...createReservationDto, idPhoto: file.path }; // Save file path
         return this.reservationService.create(reservationData);
+    }
+
+    @Get('month/:yearMonth')
+    async getReservationsByMonth(@Param('yearMonth') yearMonth: string) {
+        return this.reservationService.getReservationsByMonth(yearMonth);
     }
 }

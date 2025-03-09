@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model} from 'mongoose';
-import {BlockedAvailability, BlockedAvailabilityDocument} from './schemas/blockedAvailability.schema';
+import {BlockedAvailability, BlockedAvailabilityDocument} from './schemas/blocked-availability.schema';
 
 @Injectable()
 export class BlockedAvailabilityService {
@@ -63,10 +63,14 @@ export class BlockedAvailabilityService {
     async blockHours(data: { date: string; hoursBlocked: string[]; isBlockedByAdmin: boolean }): Promise<BlockedAvailability> {
         const { date, hoursBlocked, isBlockedByAdmin } = data;
         const existing = await this.findByDate(date);
+
         if (existing) {
             // Update existing record
-            existing.hoursBlocked = hoursBlocked;
-            existing.isAllDayBlocked = false;
+
+            // Merge existing blocked hours with new ones, avoiding duplicates
+            existing.hoursBlocked = Array.from(new Set([...existing.hoursBlocked, ...hoursBlocked]));
+
+            existing.isAllDayBlocked = existing.hoursBlocked.length === 18;
             existing.isBlockedByAdmin = isBlockedByAdmin;
             return existing.save();
         } else {
@@ -77,6 +81,28 @@ export class BlockedAvailabilityService {
                 isAllDayBlocked: false,
                 isBlockedByAdmin,
             });
+        }
+    }
+
+    async blockReservationDates(data: {
+        date: string;
+        hoursBlocked: string[];
+        isAllDayBlocked: boolean;
+        isBlockedByAdmin: boolean
+    }): Promise<BlockedAvailabilityDocument> {
+        const { date, hoursBlocked, isAllDayBlocked, isBlockedByAdmin } = data;
+        // Try to find an existing record for the date
+        let doc = await this.blockedAvailabilityModel.findOne({ date }).exec();
+        if (doc) {
+            // Update the existing record:
+            // Option 1: If you want to add the new hours to the existing ones without duplicates
+            doc.hoursBlocked = Array.from(new Set([...doc.hoursBlocked, ...hoursBlocked]));
+            doc.isAllDayBlocked = isAllDayBlocked;
+            doc.isBlockedByAdmin = isBlockedByAdmin;
+            return doc.save();
+        } else {
+            // Create a new record for that date
+            return this.blockedAvailabilityModel.create({ date, hoursBlocked, isAllDayBlocked, isBlockedByAdmin });
         }
     }
 

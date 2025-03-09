@@ -1,8 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
+export type ReservationDocument = Reservation & Document;
+
 @Schema({ timestamps: true })
-export class Reservation extends Document {
+export class Reservation {
     @Prop({ required: true })
     date: string;
 
@@ -32,6 +34,12 @@ export class Reservation extends Document {
 
     @Prop()
     doorCode?: string; // Optional
+
+    @Prop()
+    blockedHours: string[];
+
+    @Prop()
+    totalPrice: number
 }
 
 export const ReservationSchema = SchemaFactory.createForClass(Reservation);

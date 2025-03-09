@@ -1,4 +1,4 @@
-import { IsArray, IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {IsArray, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString} from 'class-validator';
 
 export class CreateReservationDto {
     @IsString()
@@ -13,8 +13,8 @@ export class CreateReservationDto {
     @IsNotEmpty()
     endingHour: string;
 
-    @IsArray()
-    selectedLights: { id: string; name: string; quantity: number; price: number }[];
+    @IsString()
+    selectedLights: string;
 
     @IsString()
     @IsNotEmpty()
@@ -38,4 +38,10 @@ export class CreateReservationDto {
     @IsString()
     @IsOptional()
     doorCode?: string;
+
+    @IsString()
+    blockedHours: string;
+
+    @IsNumber()
+    totalPrice: number;
 }

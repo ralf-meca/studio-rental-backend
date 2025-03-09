@@ -1,5 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import * as sgMail from '@sendgrid/mail';
+import * as dayjs from "dayjs";
 
 @Injectable()
 export class EmailService {
@@ -8,7 +9,7 @@ export class EmailService {
     }
 
 
-    async sendEmail(to: string, subject: string, text: string) {
+    async sendReservationConfirmationEmail(to: string, subject: string, text: string) {
         const fromEmail = process.env.SENDGRID_FROM_EMAIL;
         const itemsSelected = [
             {
@@ -62,9 +63,6 @@ export class EmailService {
         </div>
             `).join(''); // Join all HTML strings together to add them directly in the other part of our html
         };
-
-        console.log(itemsToShow());
-
 
         // For each item the user has selected we are passing this html to be rendered as a row in the email
         const emailHtml = `
@@ -400,8 +398,6 @@ export class EmailService {
         if (!fromEmail) {
             throw new Error('Missing SENDGRID_FROM_EMAIL in environment variables');
         }
-        console.log(`Sending email to ${to}`); // Log to confirm the email is being triggered
-
 
         const msg = {
             to,
@@ -421,6 +417,167 @@ export class EmailService {
             console.error('Error sending email:', error);
             if (error.response) {
                 console.error('SendGrid Error Response:', error.response.body);
+            }
+        }
+    }
+
+    async sendReservationReceivedEmail(reservation) {
+        const {name, email, date, startingHour, endingHour, number} = reservation;
+
+        const dateFormatted = dayjs(date).format("DD/MM/YYYY");
+
+        const emailHtml = `
+            <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <title>Booking Confirmation</title>
+                </head>
+                <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; color: #fff;">
+                    <div style="max-width: 600px; margin: 20px auto; background-color: #000; color: #fff; padding: 20px; text-align: center; border-radius: 5px;">
+                        <div style="margin-bottom: 10px;">
+                            <img src="http://localhost:3001/public/images/visualminds-logo-black-bg.png" alt="Logo" style="max-width: 100px;">
+                        </div>
+                        <h3 style="color: #4CAF50; font-weight: bold;">Visual Minds Studio</h3>
+                        <p style="color: #fff !important">We have received your booking. Please await our confirmation.<br>Thank you.</p>
+                    
+                        <div style="background-color: #222; padding: 15px; border-radius: 5px; margin-top: 15px; text-align: left;">
+                            <h4>Booking details</h4>
+                            <div style="width: 10px;"></div>
+                            <p style="margin: 5px 0;color: #fff"><strong>Day:</strong> ${dateFormatted}</p>
+                            <p style="margin: 5px 0;color: #fff"><strong>Start:</strong> ${startingHour}</p>
+                            <p style="margin: 5px 0;color: #fff"><strong>End:</strong> ${endingHour}</p>
+                        </div>
+                    
+                        <div style="background-color: #222; padding: 15px; border-radius: 5px; margin-top: 15px; text-align: left;">
+                            <h4 style="color: #fff">Personal Details Provided</h4>
+                            <p style="margin: 5px 0;"><strong style="color: #fff">Name:</strong> <span style="color: #fff"> ${name}</span></p>
+                            <p style="margin: 5px 0;"><strong style="color: #fff">Email:</strong> <a style="color:#FFFFFF;"> ${email}</a></p>
+                            <p style="margin: 5px 0;"><strong style="color: #fff">Phone:</strong> <span style="color: #fff"> ${number}</span></p>
+                        </div>
+                    
+                        <p style="margin: 10px 10px 0 0;color: #fff !important;">For any issues, feel free to contact us:</p>
+                    
+                        <div style="background-color: #f8d7a7; color: #000; padding: 15px; margin-top: 20px; border-radius: 5px; display: flex;">
+                            <img src="http://localhost:3001/public/images/phone-call-icon.png" alt="" style="width: 50px; height: 50px; margin: 10px 20px 10px 0px">
+                            <div>
+                                <div style="display: flex;">
+                                    <strong>Phone</strong>
+                                </div>
+                                <p style="margin: 5px 0;">+355 67 208 2008</p>
+                                <p style="margin: 5px 0;">+355 67 493 2566</p>  
+                            </div>
+                        </div>
+                    </div>
+                </body>
+            </html>
+        `
+
+        const msg = {
+            to: email, // Send to user
+            from: {
+                name: "Visual Minds Studio",
+                email: process.env.SENDGRID_FROM_EMAIL as string // Must be a verified sender in SendGrid
+            },
+            subject: 'Booking Request Received',
+            html: emailHtml,
+        };
+
+        try {
+            await sgMail.send(msg);
+            console.log('Email sent to:', email);
+        } catch (error) {
+            console.error('❌ Failed to send email:', error);
+
+            if (error.response) {
+                console.error('🔍 SendGrid Response:', error.response.body); // Log detailed error
+            }        }
+    }
+
+    async sendReservationArrivedAdminEmail(reservation) {
+        const {name,email, date, startingHour, endingHour, number, totalPrice, idPhoto} = reservation;
+        const dateFormatted = dayjs(date).format("DD/MM/YYYY");
+
+        const emailHtml = `
+            <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    <title>Booking Confirmation</title>
+                </head>
+                <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; color: #fff;">
+                    <div style="max-width: 600px; margin: 20px auto; background-color: #000; color: #fff; padding: 20px; text-align: center; border-radius: 5px;">
+                        <div style="margin-bottom: 10px;">
+                            <img src="http://localhost:3001/public/images/visualminds-logo-black-bg.png" alt="Logo" style="max-width: 100px;">
+                        </div>
+                        <h3 style="color: #4CAF50; font-weight: bold;">Vini</h3>
+                        <p>Ka ardhur nje rezervim i ri per studion:</p>
+                    
+                        <div style="background-color: #222; padding: 15px; border-radius: 5px; margin-top: 15px; text-align: left;">
+                            <h4>Detajet e rezervimit</h4>
+                            <div style="width: 10px;"></div>
+                            <p style="margin: 5px 0;"><strong>Dita:</strong> ${dateFormatted}</p>
+                            <p style="margin: 5px 0;"><strong>Ora e fillimit:</strong> ${startingHour}</p>
+                            <p style="margin: 5px 0;"><strong>Ora e mbarimit:</strong> ${endingHour}</p>
+                        </div>
+                    
+                        <div style="background-color: #222; padding: 15px; border-radius: 5px; margin-top: 15px; text-align: left;">
+                            <h4>Rezervuesi</h4>
+                            <p style="margin: 5px 0;"><strong>Emri:</strong> ${name}</p>
+                            <p style="margin: 5px 0;"><strong>Email:</strong> <a style="color:#FFFFFF;"> ${email}</a></p>
+                            <p style="margin: 5px 0;"><strong>Nr. Telefoni:</strong> ${number}</p>
+                        </div>
+                    
+                        <div style="background-color: #f8d7a7; color: #000; padding: 15px; margin-top: 20px; border-radius: 5px; display: flex; justify-content: end;">
+                          
+                              <div style="margin: 5px 0; font-size: 20px"> 
+                                <strong>Total:</strong>
+                                <span style="margin-left:10px">${totalPrice}.00 &#8364;</span>
+                              </div>
+                        </div>
+                        <div style="background-color: #f4c177; color: #000; padding: 15px; margin-top: 20px; border-radius: 5px; display: flex; justify-content: center;">
+                          
+                            <div>
+                                <div style="display: flex; justify-content: center; font-size: 20px">
+                                    <a href="http://localhost:5173/admin/orders" style="color: #000">Shiko me shume</strong>
+                                </div>
+                            </div>
+                          
+                        </div>
+                    </div>
+                </body>
+            </html>
+
+        `
+        const fs = require('fs');
+        const path = require('path'); // Add this to manage paths more easily
+
+        const msg = {
+            to: "ralfmeca@hotmail.com", // Send to admin
+            from: {
+                name: "Visual Minds Studio",
+                email: process.env.SENDGRID_FROM_EMAIL as string // todo Before changing rembember it Must be a verified sender in SendGrid
+            },
+            subject: 'Booking Request Received',
+            html: emailHtml,
+            attachments: [
+                {
+                    filename: `${name}-ID.png`, // The name of the file as it will appear in the email
+                    content: fs.readFileSync(path.resolve(idPhoto)).toString('base64'),
+                    type: 'image/png',
+                    disposition: 'attachment',
+                },
+            ],
+        };
+
+        try {
+            await sgMail.send(msg);
+            console.log('Email sent to:', "ralfmeca@hotmail.com");
+        } catch (error) {
+            console.error('❌ Failed to send email:', error);
+
+            if (error.response) {
+                console.error('🔍 SendGrid Response:', error.response.body); // Log detailed error
             }
         }
     }

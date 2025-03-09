@@ -13,9 +13,6 @@ export class Reservation extends Document {
     number: string;
 
     @Prop({ required: true })
-    isConditionsAccepted: boolean;
-
-    @Prop({ required: true })
     startingHour: string;
 
     @Prop({ required: true })
@@ -25,13 +22,16 @@ export class Reservation extends Document {
     date: string;
 
     @Prop({ required: true })
-    currentMonth: string;
-
-    @Prop({ required: true })
     doorCode: string;
 
     @Prop()
     idPhoto: string; // The URL to the uploaded photo
+
+    @Prop()
+    blockedHours: string[]
+
+    @Prop()
+    totalPrice: number
 }
 
 export const ReservationSchema = SchemaFactory.createForClass(Reservation);

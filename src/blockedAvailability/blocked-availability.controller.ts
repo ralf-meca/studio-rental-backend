@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import {BlockedAvailability, BlockedAvailabilityDocument} from './schemas/blockedAvailability.schema';
-import { BlockedAvailabilityService } from './blockedAvailability.service';
+import {BlockedAvailability, BlockedAvailabilityDocument} from './schemas/blocked-availability.schema';
+import { BlockedAvailabilityService } from './blocked-availability.service';
 
 @Controller('api/blocked-availability')
 export class BlockedAvailabilityController {
