@@ -23,7 +23,7 @@ export class EmailService {
                 <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; color: #fff;">
                     <div style="max-width: 600px; margin: 20px auto; background-color: #000; color: #fff; padding: 20px; text-align: center; border-radius: 5px;">
                         <div style="margin-bottom: 10px;">
-                            <img src="http://localhost:3001/public/images/visualminds-logo-black-bg.png" alt="Logo" style="max-width: 100px;">
+                            <img src="https://ralfmeca.art/assets/visualminds-logo-black-bg.png" alt="Logo" style="max-width: 100px;">
                         </div>
                         <h3 style="color: #4CAF50; font-weight: bold;">Visual Minds Studio</h3>
                         <p style="color: #fff !important">We have received your booking. Please await our confirmation.<br>Thank you.</p>
@@ -95,7 +95,7 @@ export class EmailService {
                 <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; color: #fff;">
                     <div style="max-width: 600px; margin: 20px auto; background-color: #000; color: #fff; padding: 20px; text-align: center; border-radius: 5px;">
                         <div style="margin-bottom: 10px;">
-                            <img src="http://localhost:3001/public/images/visualminds-logo-black-bg.png" alt="Logo" style="max-width: 100px;">
+                            <img src="https://ralfmeca.art/assets/visualminds-logo-black-bg.png" alt="Logo" style="max-width: 100px;">
                         </div>
                         <h3 style="color: #4CAF50; font-weight: bold;">Vini</h3>
                         <p>Ka ardhur nje rezervim i ri per studion:</p>
@@ -402,7 +402,7 @@ export class EmailService {
                 <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; color: #fff;">
                     <div style="max-width: 600px; margin: 20px auto; background-color: #000; color: #fff; padding: 20px; text-align: center; border-radius: 5px;">
                         <div style="margin-bottom: 10px;">
-                            <img src="http://localhost:3001/public/images/visualminds-logo-black-bg.png" alt="Logo" style="max-width: 100px;">
+                            <img src="https://ralfmeca.art/assets/visualminds-logo-black-bg.png" alt="Logo" style="max-width: 100px;">
                         </div>
                         <h3 style="color: #4CAF50; font-weight: bold;">Visual Minds Studio</h3>
                         <p style="color: #fff !important">Hi ${name}  Unfortunately We cannot accept your reservation in these hours.</p>
@@ -419,7 +419,7 @@ export class EmailService {
                         <p style="margin: 10px 10px 0 0;color: #fff !important;">For any issues, feel free to contact us:</p>
                     
                         <div style="background-color: #f8d7a7; color: #000; padding: 15px; margin-top: 20px; border-radius: 5px; display: flex;">
-                            <img src="http://localhost:3001/public/images/phone-call-icon.png" alt="" style="width: 50px; height: 50px; margin: 10px 20px 10px 0">
+                            <img src="https://ralfmeca.art/assets/images/phone-call-icon.png" alt="" style="width: 50px; height: 50px; margin: 10px 20px 10px 0">
                             <div>
                                 <div style="display: flex;">
                                     <strong>Phone</strong>
@@ -439,7 +439,7 @@ export class EmailService {
                 name: "Visual Minds Studio",
                 email: process.env.SENDGRID_FROM_EMAIL as string // Must be a verified sender in SendGrid
             },
-            subject: 'Booking Request Received',
+            subject: 'Booking Request Rejected',
             html: emailHtml,
         };
 
@@ -451,7 +451,8 @@ export class EmailService {
 
             if (error.response) {
                 console.error('🔍 SendGrid Response:', error.response.body); // Log detailed error
-            }        }
+            }
+        }
     }
 
 }

@@ -72,7 +72,7 @@ export class ReservationService {
         if (updatedReservation?.status === "accepted") {
             await this.emailService.sendReservationAcceptedEmail(updatedReservation);
         }
-        if (updatedReservation?.status === "rejected") {
+        if (updatedReservation?.status === "refused") {
             await this.emailService.sendReservationRejectedEmail(updatedReservation)
         }
 

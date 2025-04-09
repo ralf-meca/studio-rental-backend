@@ -7,6 +7,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import {BlockedAvailabilityModule} from "./blockedAvailability/blocked-availability.module";
 import {join} from "path";
 import {ReservationModule} from "./reservation/reservation.module";
+import {RentalsModule} from "./rentals/rentals.module";
 
 @Module({
     imports: [
@@ -20,6 +21,7 @@ import {ReservationModule} from "./reservation/reservation.module";
         AdminModule,
         BlockedAvailabilityModule,
         ReservationModule,
+        RentalsModule,
     ],
 })
 export class AppModule {
