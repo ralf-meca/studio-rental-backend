@@ -71,9 +71,14 @@ export class ReservationService {
         // Send email to user when reservation status is updated
         if (updatedReservation?.status === "accepted") {
             await this.emailService.sendReservationAcceptedEmail(updatedReservation);
+            // Block hours if previously it was refused and they were unblocked
+            await this.blockedAvailabilityService.addBlockedHours(updatedReservation?.date, updatedReservation?.blockedHours);
         }
         if (updatedReservation?.status === "refused") {
+            // Sends Email about the refusal
             await this.emailService.sendReservationRejectedEmail(updatedReservation)
+            // Unblocks reservation hours to be available for other users
+            await this.blockedAvailabilityService.removeBlockedHours(updatedReservation?.date, updatedReservation?.blockedHours);
         }
 
         return updatedReservation;

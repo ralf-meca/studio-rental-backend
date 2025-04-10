@@ -23,7 +23,7 @@ export class EmailService {
                 <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; color: #fff;">
                     <div style="max-width: 600px; margin: 20px auto; background-color: #000; color: #fff; padding: 20px; text-align: center; border-radius: 5px;">
                         <div style="margin-bottom: 10px;">
-                            <img src="https://ralfmeca.art/assets/visualminds-logo-black-bg.png" alt="Logo" style="max-width: 100px;">
+                            <img src="https://ralfmeca.art/public/images/visualminds-logo-black-bg.png" alt="Logo" style="max-width: 100px;">
                         </div>
                         <h3 style="color: #4CAF50; font-weight: bold;">Visual Minds Studio</h3>
                         <p style="color: #fff !important">We have received your booking. Please await our confirmation.<br>Thank you.</p>
@@ -46,7 +46,7 @@ export class EmailService {
                         <p style="margin: 10px 10px 0 0;color: #fff !important;">For any issues, feel free to contact us:</p>
                     
                         <div style="background-color: #f8d7a7; color: #000; padding: 15px; margin-top: 20px; border-radius: 5px; display: flex;">
-                            <img src="http://localhost:3001/public/images/phone-call-icon.png" alt="" style="width: 50px; height: 50px; margin: 10px 20px 10px 0">
+                            <img src="https://ralfmeca.art/public/images/phone-call-icon.png" alt="" style="width: 50px; height: 50px; margin: 10px 20px 10px 0">
                             <div>
                                 <div style="display: flex;">
                                     <strong>Phone</strong>
@@ -95,7 +95,7 @@ export class EmailService {
                 <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; color: #fff;">
                     <div style="max-width: 600px; margin: 20px auto; background-color: #000; color: #fff; padding: 20px; text-align: center; border-radius: 5px;">
                         <div style="margin-bottom: 10px;">
-                            <img src="https://ralfmeca.art/assets/visualminds-logo-black-bg.png" alt="Logo" style="max-width: 100px;">
+                            <img src="https://ralfmeca.art/public/images/visualminds-logo-black-bg.png" alt="Logo" style="max-width: 100px;">
                         </div>
                         <h3 style="color: #4CAF50; font-weight: bold;">Vini</h3>
                         <p>Ka ardhur nje rezervim i ri per studion:</p>
@@ -140,10 +140,10 @@ export class EmailService {
         const path = require('path'); // Add this to manage paths more easily
 
         const msg = {
-            to: "ralfmeca@hotmail.com", // Send to admin
+            to: "meca.ralf@gmail.com", // Send to admin
             from: {
                 name: "Visual Minds Studio",
-                email: process.env.SENDGRID_FROM_EMAIL as string // todo Before changing rembember it Must be a verified sender in SendGrid
+                email: process.env.SENDGRID_FROM_EMAIL as string // todo Before changing remember it Must be a verified sender in SendGrid
             },
             subject: 'Booking Request Received',
             html: emailHtml,
@@ -159,7 +159,7 @@ export class EmailService {
 
         try {
             await sgMail.send(msg);
-            console.log('Email sent to:', "ralfmeca@hotmail.com");
+            console.log('Email sent to:', "meca.ralf@gmail.com");
         } catch (error) {
             console.error('❌ Failed to send email:', error);
 
@@ -170,56 +170,26 @@ export class EmailService {
     }
 
     async sendReservationAcceptedEmail(reservation) {
-        console.log("reservation ->>>", reservation)
 
         const dateFormatted = dayjs(reservation?.date).format("DD/MM/YYYY");
-        // todo the lights should have their own image stored locally when project will be ready to be deployed
-        const mockedDataLights = [
-            {
-                id: 1, name: "Led 300 W godox sl 300 ii", price: 5, quantity: 1,
-                img: "https://studio.visualminds.al/lights/1.jpeg"
-            },
-            {
-                id: 2, name: "Nanelite tubes", price: 5, quantity: 4, img: "https://studio.visualminds.al/lights/2.jpeg"
-            },
-            {
-                id: 3, name: "40 W Zhiyun m40", price: 5, quantity: 2, img: "https://studio.visualminds.al/lights/3.jpeg"
-            },
-            {
-                id: 4, name: "100 W Zhiyun fw100", price: 5, quantity: 2, img: "https://studio.visualminds.al/lights/4.jpeg"
-            },
-            {
-                id: 5, name: "Led 200 W Godox fv200", price: 5, quantity: 1,
-                img: "https://studio.visualminds.al/lights/5.jpeg"
-            },
-            {
-                id: 6, name: "Led 150 W Godox fv150", price: 5, quantity: 1,
-                img: "https://studio.visualminds.al/lights/6.jpeg"
-            },
-            {
-                id: 7, name: "Led 150 W Godox sl150ii", price: 5, quantity: 1,
-                img: "https://studio.visualminds.al/lights/7.jpeg"
-            },
-            {
-                id: 8, name: "Strobe 600 W Godox ad600bm", price: 5, quantity: 1,
-                img: "https://studio.visualminds.al/lights/8.jpeg"
-            },
-        ]
+
         const rentalsToShow = () => {
-            return reservation.selectedLights?.map(item => `
-                <div style="margin: 0 auto;">
+            return reservation.selectedLights?.map(rental => {
+                const imgSrc = `ralfmeca.art${rental.image.replace(/ /g, '%20')}`
+
+                return ` <div style="margin: 0 auto;">
                     <table style="width: 100%; font-family: Arial, sans-serif; border-collapse: collapse;">
                         <tr>
                             <td style="width: 23%; text-align: center; padding: 10px;">
                                 <img 
-                                src="${mockedDataLights.filter(el => el.name === item.name)[0].img}" 
-                                alt="${item.name}" title="${item.name}" style="width: 80%; max-width: 90px;">
+                                src="${imgSrc}"
+                                alt="${rental.name}" title="${rental.name}" style="width: 50px; max-width: 90px;">
                             </td>
                             <td style="width: 54%; padding: 15px; background: #fff;">
-                                <strong>${item.name}</strong> <span style="color: #666;">x${item.quantity}</span>
+                                <strong>${rental.name}</strong> <span style="color: #666;">x${rental.quantity}</span>
                             </td>
                             <td style="width: 23%; padding: 15px; background: #fff; text-align: left;">
-                                <strong>${item.price * item.quantity * reservation?.blockedHours?.length}.00 &#8364;</strong>
+                                <strong>${rental.price * rental.quantity * reservation?.blockedHours?.length}.00 &#8364;</strong>
                             </td>
                         </tr>
                         <!--  Divider -->
@@ -228,7 +198,8 @@ export class EmailService {
                         </tr>
                     </table>
                 </div>
-            `).join(''); // Join all HTML strings together to add them directly in the other part of our html
+            `
+            }).join(''); // Join all HTML strings together to add them directly in the other part of our html
         };
 
         // For each item the user has selected we are passing this html to be rendered as a row in the email
@@ -361,11 +332,7 @@ export class EmailService {
     </table>
   </body>
 </html>
-
-
-
-
-            `
+`
 
         const msg = {
             to: reservation?.email, // Send to user
@@ -402,7 +369,7 @@ export class EmailService {
                 <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; color: #fff;">
                     <div style="max-width: 600px; margin: 20px auto; background-color: #000; color: #fff; padding: 20px; text-align: center; border-radius: 5px;">
                         <div style="margin-bottom: 10px;">
-                            <img src="https://ralfmeca.art/assets/visualminds-logo-black-bg.png" alt="Logo" style="max-width: 100px;">
+                            <img src="https://ralfmeca.art/public/images/visualminds-logo-black-bg.png" alt="Logo" style="max-width: 100px;">
                         </div>
                         <h3 style="color: #4CAF50; font-weight: bold;">Visual Minds Studio</h3>
                         <p style="color: #fff !important">Hi ${name}  Unfortunately We cannot accept your reservation in these hours.</p>
@@ -419,7 +386,7 @@ export class EmailService {
                         <p style="margin: 10px 10px 0 0;color: #fff !important;">For any issues, feel free to contact us:</p>
                     
                         <div style="background-color: #f8d7a7; color: #000; padding: 15px; margin-top: 20px; border-radius: 5px; display: flex;">
-                            <img src="https://ralfmeca.art/assets/images/phone-call-icon.png" alt="" style="width: 50px; height: 50px; margin: 10px 20px 10px 0">
+                            <img src="https://ralfmeca.art/public/images/phone-call-icon.png" alt="" style="width: 50px; height: 50px; margin: 10px 20px 10px 0">
                             <div>
                                 <div style="display: flex;">
                                     <strong>Phone</strong>

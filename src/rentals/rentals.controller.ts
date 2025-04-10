@@ -31,7 +31,7 @@ export class RentalsController {
                 filename: (req, file, cb) => {
                     const rentalName = req.body.name;  // Get the name from the request body
                     const fileExtension = extname(file.originalname);  // Get the file extension
-                    cb(null, `${rentalName}${fileExtension}`);  // Combine the name with the extension
+                    cb(null, `/${rentalName}${fileExtension}`);  // Combine the name with the extension
                 },
             }),
         }),
@@ -43,8 +43,7 @@ export class RentalsController {
         if (!file) {
             throw new BadRequestException('File (img) not provided');
         }
-        const rentalWithImage = {...rentalData, img: file.path};
-        console.log('file', file)
+        const rentalWithImage = {...rentalData, img: `/${file.path}`};
         return this.rentalService.create(rentalWithImage);
     }
 
