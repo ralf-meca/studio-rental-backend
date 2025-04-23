@@ -1,5 +1,6 @@
-import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
+import {Controller, Post, Body, UnauthorizedException, Res, HttpCode} from '@nestjs/common';
 import { AdminService } from './admin.service';
+import { Response } from 'express';
 
 @Controller('api/admin')
 export class AdminController {
@@ -11,9 +12,27 @@ export class AdminController {
     }
 
     @Post('/login')
-    async login(@Body() body: { username: string; password: string }) {
+    @HttpCode(200)
+    async login(
+        @Body() body: { username: string; password: string },
+        @Res({ passthrough: true }) response: Response
+    ) {
         const token = await this.adminService.validateAdmin(body.username, body.password);
         if (!token) throw new UnauthorizedException('Invalid credentials');
-        return { token };
+
+        response.cookie('token', token, {
+            httpOnly: true,
+            sameSite: 'lax', // or 'none' if cross-site (needs https)
+            secure: true,    // only send on HTTPS
+            maxAge: 0 // session-only cookie (expires when tab closes)
+        });
+
+        return { success: true };
+    }
+
+    @Post('/logout')
+    logout(@Res({ passthrough: true }) response: Response) {
+        response.clearCookie('token');
+        return { message: 'Logged out' };
     }
 }

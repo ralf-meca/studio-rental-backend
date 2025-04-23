@@ -23,7 +23,7 @@ import {RentalsModule} from "./rentals/rentals.module";
             },
         ),
         EmailModule,
-        MongooseModule.forRoot('mongodb://localhost:27017/studio-rental'),
+        MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://localhost:27017/studio-rental'),
         AdminModule,
         BlockedAvailabilityModule,
         ReservationModule,

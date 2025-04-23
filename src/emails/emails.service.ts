@@ -143,7 +143,7 @@ export class EmailService {
             to: "meca.ralf@gmail.com", // Send to admin
             from: {
                 name: "Visual Minds Studio",
-                email: process.env.SENDGRID_FROM_EMAIL as string // todo Before changing remember it Must be a verified sender in SendGrid
+                email: process.env.SENDGRID_FROM_EMAIL as string //     todo Before changing remember it Must be a verified sender in SendGrid
             },
             subject: 'Booking Request Received',
             html: emailHtml,
